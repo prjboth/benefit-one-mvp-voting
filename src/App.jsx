@@ -1,0 +1,82 @@
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
+import Voting from './pages/Voting'
+import Results from './pages/Results'
+import Import from './pages/Import'
+import PasswordProtection from './components/PasswordProtection'
+import LanguageSwitcher from './components/LanguageSwitcher'
+import { t } from './utils/i18n'
+
+function Navigation() {
+  const location = useLocation()
+  
+  const isActive = (path) => location.pathname === path
+
+  return (
+    <nav className="bg-white shadow-lg mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <h1 className="text-2xl font-bold text-red-600">Benefit-One MVP</h1>
+            </div>
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <Link
+                to="/"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  isActive('/') 
+                    ? 'border-red-500 text-gray-900' 
+                    : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
+                }`}
+              >
+                {t('nav.vote')}
+              </Link>
+              <Link
+                to="/results"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  isActive('/results') 
+                    ? 'border-red-500 text-gray-900' 
+                    : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
+                }`}
+              >
+                {t('nav.results')}
+              </Link>
+              <Link
+                to="/import"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  isActive('/import') 
+                    ? 'border-red-500 text-gray-900' 
+                    : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
+                }`}
+              >
+                {t('nav.import')}
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <LanguageSwitcher />
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+          <Routes>
+            <Route path="/" element={<Voting />} />
+            <Route path="/results" element={<PasswordProtection><Results /></PasswordProtection>} />
+            <Route path="/import" element={<PasswordProtection><Import /></PasswordProtection>} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
+  )
+}
+
+export default App
+
