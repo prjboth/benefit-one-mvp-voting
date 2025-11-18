@@ -8,8 +8,14 @@ import { join } from 'path'
 // In Vercel, /tmp is writable but data is ephemeral (lost on cold start)
 // For production, consider using Vercel KV, Supabase, or MongoDB
 
+// Global variable to share data across all invocations in the same runtime
+// This persists between function invocations until the runtime is recycled
+if (!global.vercelDataStore) {
+  global.vercelDataStore = {}
+}
+
 // In-memory cache to persist data between invocations in the same runtime
-const memoryCache = {}
+const memoryCache = global.vercelDataStore
 
 const readJSON = (filePath, defaultValue = []) => {
   try {

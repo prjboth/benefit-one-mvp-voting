@@ -46,7 +46,15 @@ export default async function handler(req, res) {
     results.sort((a, b) => b.totalScore - a.totalScore)
     const top3 = results.slice(0, 3)
     
-    console.log('Top 3 results:', top3.map(r => ({ name: r.name, score: r.totalScore })))
+    console.log(`Top 3 results: ${top3.length}`, top3.map(r => ({ name: r.name, score: r.totalScore })))
+    console.log(`Total votes: ${votes.length}`)
+    
+    // If no results but we have votes, log for debugging
+    if (top3.length === 0 && votes.length > 0) {
+      console.warn('WARNING: No results but votes exist!')
+      console.warn('Votes:', votes.map(v => ({ id: v.id, voterName: v.voterName, scores: Object.keys(v.scores || {}) })))
+      console.warn('Members:', members.map(m => ({ id: m.id, name: m.name })))
+    }
     
     return res.json({
       results: top3,

@@ -12,7 +12,10 @@ export default async function handler(req, res) {
   }
 
   const logsFile = '/tmp/logs.json'
+  console.log('Reading vote logs from:', logsFile)
   const logs = readJSON(logsFile, [])
+  console.log(`Found ${logs.length} logs`)
   const recentLogs = logs.slice(-100).reverse()
+  console.log(`Returning ${recentLogs.length} recent logs`)
   return res.json(recentLogs)
 }
