@@ -80,10 +80,10 @@ export const api = {
     body: JSON.stringify(member)
   }),
   
-  // Delete member
+  // Delete member - Use query parameter instead of path parameter
   deleteMember: (id) => {
     console.log('Deleting member with id:', id)
-    return apiCall(`/members/${id}`, {
+    return apiCall(`/members?id=${encodeURIComponent(id)}`, {
       method: 'DELETE'
     })
   },
