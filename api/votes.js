@@ -22,30 +22,50 @@ export default async function handler(req, res) {
   }
 
   if (method === 'POST') {
-    const { voterName, scores } = req.body
-    const voteId = Date.now().toString()
-    const timestamp = new Date().toISOString()
-    
-    const vote = { id: voteId, voterName, timestamp, scores }
-    const votes = readJSON(votesFile, [])
-    votes.push(vote)
-    writeJSON(votesFile, votes)
-    
-    // Create logs
-    const logs = readJSON(logsFile, [])
-    const members = readJSON(membersFile, [])
-    
-    Object.keys(scores).forEach(memberId => {
-      const score = scores[memberId]
-      if (score > 0) {
-        const member = members.find(m => m.id === memberId)
-        const memberName = member ? member.name : 'Unknown'
-        logs.push({ voteId, voterName, memberId, memberName, score, timestamp })
+    try {
+      const { voterName, scores } = req.body
+      console.log('Received vote:', { voterName, scores })
+      
+      if (!voterName || !scores) {
+        return res.status(400).json({ error: 'Missing voterName or scores' })
       }
-    })
-    
-    writeJSON(logsFile, logs)
-    return res.json({ success: true, id: voteId })
+      
+      const voteId = Date.now().toString()
+      const timestamp = new Date().toISOString()
+      
+      const vote = { id: voteId, voterName, timestamp, scores }
+      const votes = readJSON(votesFile, [])
+      votes.push(vote)
+      const writeSuccess = writeJSON(votesFile, votes)
+      
+      if (!writeSuccess) {
+        console.error('Failed to write votes file')
+        return res.status(500).json({ error: 'Failed to save vote' })
+      }
+      
+      console.log(`Vote saved successfully. Total votes: ${votes.length}`)
+      
+      // Create logs
+      const logs = readJSON(logsFile, [])
+      const members = readJSON(membersFile, [])
+      
+      Object.keys(scores).forEach(memberId => {
+        const score = scores[memberId]
+        if (score > 0) {
+          const member = members.find(m => m.id === memberId)
+          const memberName = member ? member.name : 'Unknown'
+          logs.push({ voteId, voterName, memberId, memberName, score, timestamp })
+        }
+      })
+      
+      writeJSON(logsFile, logs)
+      console.log(`Logs updated. Total logs: ${logs.length}`)
+      
+      return res.json({ success: true, id: voteId })
+    } catch (error) {
+      console.error('Error in POST /api/votes:', error)
+      return res.status(500).json({ error: error.message })
+    }
   }
 
   if (method === 'DELETE') {

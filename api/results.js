@@ -11,33 +11,49 @@ export default async function handler(req, res) {
     return res.status(200).end()
   }
 
-  const membersFile = '/tmp/members.json'
-  const votesFile = '/tmp/votes.json'
+  try {
+    const membersFile = '/tmp/members.json'
+    const votesFile = '/tmp/votes.json'
 
-  const members = readJSON(membersFile, [])
-  const votes = readJSON(votesFile, [])
-  
-  const scores = {}
-  members.forEach(member => {
-    scores[member.id] = 0
-  })
-  
-  votes.forEach(vote => {
-    Object.keys(vote.scores).forEach(memberId => {
-      scores[memberId] = (scores[memberId] || 0) + vote.scores[memberId]
+    console.log('Reading members and votes...')
+    const members = readJSON(membersFile, [])
+    const votes = readJSON(votesFile, [])
+    
+    console.log(`Found ${members.length} members and ${votes.length} votes`)
+    
+    const scores = {}
+    members.forEach(member => {
+      scores[member.id] = 0
     })
-  })
-  
-  const results = members.map(member => ({
-    ...member,
-    totalScore: scores[member.id] || 0
-  }))
-  
-  results.sort((a, b) => b.totalScore - a.totalScore)
-  const top3 = results.slice(0, 3)
-  
-  return res.json({
-    results: top3,
-    totalVotes: votes.length
-  })
+    
+    votes.forEach(vote => {
+      if (vote.scores && typeof vote.scores === 'object') {
+        Object.keys(vote.scores).forEach(memberId => {
+          scores[memberId] = (scores[memberId] || 0) + (vote.scores[memberId] || 0)
+        })
+      }
+    })
+    
+    const results = members.map(member => ({
+      ...member,
+      totalScore: scores[member.id] || 0
+    }))
+    
+    results.sort((a, b) => b.totalScore - a.totalScore)
+    const top3 = results.slice(0, 3)
+    
+    console.log('Top 3 results:', top3.map(r => ({ name: r.name, score: r.totalScore })))
+    
+    return res.json({
+      results: top3,
+      totalVotes: votes.length
+    })
+  } catch (error) {
+    console.error('Error in results API:', error)
+    return res.status(500).json({ 
+      error: error.message,
+      results: [],
+      totalVotes: 0
+    })
+  }
 }

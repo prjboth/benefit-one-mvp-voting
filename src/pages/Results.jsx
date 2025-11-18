@@ -21,26 +21,35 @@ function Results() {
 
   const loadResults = async () => {
     try {
+      console.log('Loading results...')
       const data = await calculateResults()
-      console.log('Results data:', data)
+      console.log('Results data received:', data)
+      console.log('Data type:', typeof data, 'Is array:', Array.isArray(data))
       
       // calculateResults now returns { results, totalVotes } from API
       if (Array.isArray(data)) {
-        // Fallback for localStorage
+        // Fallback for localStorage (should not happen in production)
+        console.log('Using localStorage fallback (array format)')
         setResults(data.slice(0, 3)) // Show only top 3
         const votes = await getAllVotes()
         setTotalVotes(Array.isArray(votes) ? votes.length : 0)
-      } else if (data && typeof data === 'object') {
-        // API response
-        setResults(Array.isArray(data.results) ? data.results : []) // Already top 3 from API
+      } else if (data && typeof data === 'object' && 'results' in data) {
+        // API response format: { results: [...], totalVotes: number }
+        console.log('Using API response format')
+        const resultsArray = Array.isArray(data.results) ? data.results : []
+        console.log('Results array:', resultsArray)
+        console.log('Total votes:', data.totalVotes)
+        setResults(resultsArray) // Already top 3 from API
         setTotalVotes(data.totalVotes || 0)
       } else {
+        console.warn('Unexpected data format:', data)
         setResults([])
         setTotalVotes(0)
       }
       setIsLoaded(false)
     } catch (error) {
       console.error('Failed to load results:', error)
+      console.error('Error details:', error.message, error.stack)
       setResults([])
       setTotalVotes(0)
       setIsLoaded(false)
