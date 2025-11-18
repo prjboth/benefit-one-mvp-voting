@@ -19,7 +19,13 @@ function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-2xl font-bold text-red-600">Benefit-One MVP</h1>
+              <Link to="/" className="flex items-center">
+                <img 
+                  src="https://benefit-one.co.th/wp-content/uploads/2025/04/Logo-1.png" 
+                  alt="Benefit-One" 
+                  className="h-12 w-auto object-contain"
+                />
+              </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
