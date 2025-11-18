@@ -125,5 +125,18 @@ export const api = {
   saveLuckyDrawLog: (log) => apiCall('/lucky-draw-logs', {
     method: 'POST',
     body: JSON.stringify(log)
+  }),
+  
+  // Admin Password
+  getAdminPassword: () => apiCall('/admin-password'),
+  
+  verifyAdminPassword: (password) => apiCall('/admin-password/verify', {
+    method: 'POST',
+    body: JSON.stringify({ password })
+  }),
+  
+  resetAdminPassword: (currentPassword, newPassword) => apiCall('/admin-password', {
+    method: 'PUT',
+    body: JSON.stringify({ currentPassword, newPassword })
   })
 }

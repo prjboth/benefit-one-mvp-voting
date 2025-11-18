@@ -1,23 +1,45 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { api } from '../utils/api'
 import { t } from '../utils/i18n'
-
-const CORRECT_PASSWORD = '0909'
 
 function PasswordProtection({ children }) {
   const [password, setPassword] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (password === CORRECT_PASSWORD) {
-      setIsAuthenticated(true)
-      setError('')
-    } else {
-      setError(t('password.error'))
+    setLoading(true)
+    setError('')
+    
+    try {
+      const result = await api.verifyAdminPassword(password)
+      if (result.valid) {
+        setIsAuthenticated(true)
+        setError('')
+        // Store authentication in sessionStorage (cleared on browser close)
+        sessionStorage.setItem('adminAuthenticated', 'true')
+      } else {
+        setError(t('password.error'))
+        setPassword('')
+      }
+    } catch (error) {
+      console.error('Password verification error:', error)
+      setError(t('password.error') || 'Invalid password')
       setPassword('')
+    } finally {
+      setLoading(false)
     }
   }
+
+  // Check if already authenticated in this session
+  useEffect(() => {
+    const authenticated = sessionStorage.getItem('adminAuthenticated')
+    if (authenticated === 'true') {
+      setIsAuthenticated(true)
+    }
+  }, [])
 
   if (isAuthenticated) {
     return children
@@ -68,9 +90,10 @@ function PasswordProtection({ children }) {
 
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
+            disabled={loading}
+            className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
           >
-            {t('password.submit')}
+            {loading ? t('password.verifying') || 'Verifying...' : t('password.submit')}
           </button>
         </form>
       </div>

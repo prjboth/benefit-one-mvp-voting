@@ -77,7 +77,26 @@ const translations = {
       password: 'รหัสผ่าน',
       passwordPlaceholder: 'กรอกรหัสผ่าน',
       submit: 'เข้าสู่ระบบ',
-      error: 'รหัสผ่านไม่ถูกต้อง'
+      error: 'รหัสผ่านไม่ถูกต้อง',
+      verifying: 'กำลังตรวจสอบ...'
+    },
+    // Config Page
+    config: {
+      resetPassword: 'รีเซ็ตรหัสผ่าน',
+      resetPasswordDescription: 'เปลี่ยนรหัสผ่าน Admin สำหรับเข้าถึงหน้าที่ต้องการรหัสผ่าน',
+      currentPassword: 'รหัสผ่านปัจจุบัน',
+      currentPasswordPlaceholder: 'กรอกรหัสผ่านปัจจุบัน',
+      newPassword: 'รหัสผ่านใหม่',
+      newPasswordPlaceholder: 'กรอกรหัสผ่านใหม่ (อย่างน้อย 4 ตัวอักษร)',
+      confirmPassword: 'ยืนยันรหัสผ่านใหม่',
+      confirmPasswordPlaceholder: 'ยืนยันรหัสผ่านใหม่',
+      passwordRequired: 'กรุณากรอกข้อมูลครบถ้วน',
+      passwordMinLength: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร',
+      passwordMinLengthHint: 'อย่างน้อย 4 ตัวอักษร',
+      passwordMismatch: 'รหัสผ่านใหม่ไม่ตรงกัน',
+      currentPasswordIncorrect: 'รหัสผ่านปัจจุบันไม่ถูกต้อง',
+      passwordResetSuccess: 'รีเซ็ตรหัสผ่านสำเร็จ! ระบบจะรีโหลดหน้าเว็บ...',
+      resetting: 'กำลังรีเซ็ต...'
     },
     // Lucky Draw Page
     luckyDraw: {
@@ -186,7 +205,26 @@ const translations = {
       password: 'Password',
       passwordPlaceholder: 'Enter password',
       submit: 'Login',
-      error: 'Incorrect password'
+      error: 'Incorrect password',
+      verifying: 'Verifying...'
+    },
+    // Config Page
+    config: {
+      resetPassword: 'Reset Password',
+      resetPasswordDescription: 'Change the admin password for accessing protected pages.',
+      currentPassword: 'Current Password',
+      currentPasswordPlaceholder: 'Enter current password',
+      newPassword: 'New Password',
+      newPasswordPlaceholder: 'Enter new password (min 4 characters)',
+      confirmPassword: 'Confirm New Password',
+      confirmPasswordPlaceholder: 'Confirm new password',
+      passwordRequired: 'All fields are required',
+      passwordMinLength: 'Password must be at least 4 characters',
+      passwordMinLengthHint: 'Minimum 4 characters',
+      passwordMismatch: 'New passwords do not match',
+      currentPasswordIncorrect: 'Current password is incorrect',
+      passwordResetSuccess: 'Password reset successfully! Page will reload...',
+      resetting: 'Resetting...'
     },
     // Lucky Draw Page
     luckyDraw: {

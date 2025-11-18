@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { getMembers, addMember, updateMember, deleteMember, resetAllVotes, getVoteCount, getVoteLogs } from '../utils/storage'
+import { api } from '../utils/api'
 import { t } from '../utils/i18n'
 
 function Config() {
-  const [activeTab, setActiveTab] = useState('members') // 'members' or 'logs'
+  const [activeTab, setActiveTab] = useState('members') // 'members', 'logs', or 'password'
   const [members, setMembers] = useState([])
   const [newMemberName, setNewMemberName] = useState('')
   const [newMemberPhoto, setNewMemberPhoto] = useState(null)
@@ -15,6 +16,13 @@ function Config() {
   const [voteCount, setVoteCount] = useState(0)
   const [logs, setLogs] = useState([])
   const [logsLoading, setLogsLoading] = useState(false)
+  // Password reset states
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+  const [passwordLoading, setPasswordLoading] = useState(false)
 
   useEffect(() => {
     loadMembers()
@@ -261,6 +269,16 @@ function Config() {
           >
             📋 Logs / บันทึกการโหวต
           </button>
+          <button
+            onClick={() => setActiveTab('password')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'password'
+                ? 'border-red-500 text-red-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            🔐 {t('config.resetPassword') || 'Reset Password / รีเซ็ตรหัสผ่าน'}
+          </button>
         </nav>
       </div>
 
@@ -461,6 +479,110 @@ function Config() {
             )}
           </div>
         </>
+      )}
+
+      {/* Password Reset Tab */}
+      {activeTab === 'password' && (
+        <div className="bg-gradient-to-br from-red-50 to-white rounded-xl p-8 border-2 border-red-200">
+          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="mr-3">🔐</span>
+            {t('config.resetPassword') || 'Reset Admin Password / รีเซ็ตรหัสผ่าน Admin'}
+          </h3>
+          <p className="text-gray-600 mb-6">
+            {t('config.resetPasswordDescription') || 'Change the admin password for accessing protected pages. / เปลี่ยนรหัสผ่าน Admin สำหรับเข้าถึงหน้าที่ต้องการรหัสผ่าน'}
+          </p>
+
+          <form onSubmit={handleResetPassword} className="space-y-6 max-w-md">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                {t('config.currentPassword') || 'Current Password / รหัสผ่านปัจจุบัน'}
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => {
+                  setCurrentPassword(e.target.value)
+                  setPasswordError('')
+                }}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder={t('config.currentPasswordPlaceholder') || 'Enter current password'}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                {t('config.newPassword') || 'New Password / รหัสผ่านใหม่'}
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value)
+                  setPasswordError('')
+                }}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder={t('config.newPasswordPlaceholder') || 'Enter new password (min 4 characters)'}
+                minLength={4}
+                required
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                {t('config.passwordMinLengthHint') || 'Minimum 4 characters / อย่างน้อย 4 ตัวอักษร'}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                {t('config.confirmPassword') || 'Confirm New Password / ยืนยันรหัสผ่านใหม่'}
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value)
+                  setPasswordError('')
+                }}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder={t('config.confirmPasswordPlaceholder') || 'Confirm new password'}
+                minLength={4}
+                required
+              />
+            </div>
+
+            {passwordError && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                <p className="text-red-700 font-semibold flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  {passwordError}
+                </p>
+              </div>
+            )}
+
+            {passwordSuccess && (
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                <p className="text-green-700 font-semibold flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  {passwordSuccess}
+                </p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={passwordLoading}
+              className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
+            >
+              {passwordLoading 
+                ? (t('config.resetting') || 'Resetting... / กำลังรีเซ็ต...') 
+                : (t('config.resetPassword') || 'Reset Password / รีเซ็ตรหัสผ่าน')
+              }
+            </button>
+          </form>
+        </div>
       )}
 
       {/* Logs Tab */}
