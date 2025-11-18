@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getMembers, saveMembers, resetAllVotes, getVoteCount } from '../utils/storage'
+import { getMembers, addMember, updateMember, deleteMember, resetAllVotes, getVoteCount } from '../utils/storage'
 import { t } from '../utils/i18n'
 
 function Import() {
@@ -18,13 +18,24 @@ function Import() {
     updateVoteCount()
   }, [])
 
-  const updateVoteCount = () => {
-    setVoteCount(getVoteCount())
+  const updateVoteCount = async () => {
+    try {
+      const count = await getVoteCount()
+      setVoteCount(count)
+    } catch (error) {
+      console.error('Failed to get vote count:', error)
+      setVoteCount(0)
+    }
   }
 
-  const loadMembers = () => {
-    const loadedMembers = getMembers()
-    setMembers(loadedMembers)
+  const loadMembers = async () => {
+    try {
+      const loadedMembers = await getMembers()
+      setMembers(loadedMembers)
+    } catch (error) {
+      console.error('Failed to load members:', error)
+      setMembers([])
+    }
   }
 
   const handlePhotoChange = (e, isEdit = false) => {
@@ -49,7 +60,7 @@ function Import() {
     }
   }
 
-  const handleAddMember = (e) => {
+  const handleAddMember = async (e) => {
     e.preventDefault()
     if (!newMemberName.trim()) {
       alert(t('import.alertMemberName'))
@@ -62,20 +73,28 @@ function Import() {
       photo: newMemberPhoto || null
     }
 
-    const updatedMembers = [...members, newMember]
-    saveMembers(updatedMembers)
-    setMembers(updatedMembers)
-    setNewMemberName('')
-    setNewMemberPhoto(null)
-    setPhotoPreview(null)
-    document.getElementById('photo-input').value = ''
+    try {
+      await addMember(newMember)
+      setMembers([...members, newMember])
+      setNewMemberName('')
+      setNewMemberPhoto(null)
+      setPhotoPreview(null)
+      document.getElementById('photo-input').value = ''
+    } catch (error) {
+      alert('Failed to add member. Please try again. / เพิ่มสมาชิกไม่สำเร็จ กรุณาลองอีกครั้ง')
+      console.error('Add member error:', error)
+    }
   }
 
-  const handleDeleteMember = (id) => {
+  const handleDeleteMember = async (id) => {
     if (window.confirm(t('import.deleteConfirm'))) {
-      const updatedMembers = members.filter(m => m.id !== id)
-      saveMembers(updatedMembers)
-      setMembers(updatedMembers)
+      try {
+        await deleteMember(id)
+        setMembers(members.filter(m => m.id !== id))
+      } catch (error) {
+        alert('Failed to delete member. Please try again. / ลบสมาชิกไม่สำเร็จ กรุณาลองอีกครั้ง')
+        console.error('Delete member error:', error)
+      }
     }
   }
 
@@ -86,23 +105,30 @@ function Import() {
     setEditPhotoPreview(member.photo)
   }
 
-  const handleSaveEdit = (id) => {
+  const handleSaveEdit = async (id) => {
     if (!editName.trim()) {
       alert(t('import.alertMemberName'))
       return
     }
 
-    const updatedMembers = members.map(m => 
-      m.id === id 
-        ? { ...m, name: editName.trim(), photo: editPhoto }
-        : m
-    )
-    saveMembers(updatedMembers)
-    setMembers(updatedMembers)
-    setEditingId(null)
-    setEditName('')
-    setEditPhoto(null)
-    setEditPhotoPreview(null)
+    try {
+      await updateMember(id, {
+        name: editName.trim(),
+        photo: editPhoto
+      })
+      setMembers(members.map(m => 
+        m.id === id 
+          ? { ...m, name: editName.trim(), photo: editPhoto }
+          : m
+      ))
+      setEditingId(null)
+      setEditName('')
+      setEditPhoto(null)
+      setEditPhotoPreview(null)
+    } catch (error) {
+      alert('Failed to update member. Please try again. / แก้ไขสมาชิกไม่สำเร็จ กรุณาลองอีกครั้ง')
+      console.error('Update member error:', error)
+    }
   }
 
   const handleCancelEdit = () => {
@@ -112,12 +138,12 @@ function Import() {
     setEditPhotoPreview(null)
   }
 
-  const handleImportCSV = (e) => {
+  const handleImportCSV = async (e) => {
     const file = e.target.files[0]
     if (!file) return
 
     const reader = new FileReader()
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const text = event.target.result
       const lines = text.split('\n').filter(line => line.trim())
       
@@ -136,21 +162,33 @@ function Import() {
       })
 
       if (importedMembers.length > 0) {
-        const updatedMembers = [...members, ...importedMembers]
-        saveMembers(updatedMembers)
-        setMembers(updatedMembers)
-        alert(`${t('import.importSuccess')} ${importedMembers.length} ${t('import.people')}`)
+        try {
+          // Add each member via API
+          for (const member of importedMembers) {
+            await addMember(member)
+          }
+          setMembers([...members, ...importedMembers])
+          alert(`${t('import.importSuccess')} ${importedMembers.length} ${t('import.people')}`)
+        } catch (error) {
+          alert('Failed to import members. Please try again. / นำเข้าสมาชิกไม่สำเร็จ กรุณาลองอีกครั้ง')
+          console.error('Import CSV error:', error)
+        }
       }
     }
     reader.readAsText(file)
   }
 
-  const handleResetVotes = () => {
+  const handleResetVotes = async () => {
     const confirmMessage = t('import.resetVotesConfirm')
     if (window.confirm(confirmMessage)) {
-      resetAllVotes()
-      updateVoteCount()
-      alert(t('import.resetVotesSuccess'))
+      try {
+        await resetAllVotes()
+        await updateVoteCount()
+        alert(t('import.resetVotesSuccess'))
+      } catch (error) {
+        alert('Failed to reset votes. Please try again. / รีเซ็ตการโหวตไม่สำเร็จ กรุณาลองอีกครั้ง')
+        console.error('Reset votes error:', error)
+      }
     }
   }
 

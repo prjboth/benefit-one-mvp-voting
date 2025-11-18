@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Voting from './pages/Voting'
 import Results from './pages/Results'
 import Import from './pages/Import'
+import VoteLogs from './pages/VoteLogs'
 import PasswordProtection from './components/PasswordProtection'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import { t } from './utils/i18n'
@@ -50,6 +51,16 @@ function Navigation() {
               >
                 {t('nav.import')}
               </Link>
+              <Link
+                to="/logs"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  isActive('/logs') 
+                    ? 'border-red-500 text-gray-900' 
+                    : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
+                }`}
+              >
+                📋 Logs
+              </Link>
             </div>
           </div>
           <div className="flex items-center">
@@ -71,6 +82,7 @@ function App() {
             <Route path="/" element={<Voting />} />
             <Route path="/results" element={<PasswordProtection><Results /></PasswordProtection>} />
             <Route path="/import" element={<PasswordProtection><Import /></PasswordProtection>} />
+            <Route path="/logs" element={<VoteLogs />} />
           </Routes>
         </div>
       </div>

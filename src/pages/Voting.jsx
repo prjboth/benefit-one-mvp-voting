@@ -42,7 +42,7 @@ function Voting() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!voterName.trim()) {
       alert(t('voting.alertVoterName'))
@@ -54,23 +54,28 @@ function Voting() {
       return
     }
 
-    saveVote({
-      voterName: voterName.trim(),
-      scores: scores
-    })
-
-    setSubmitted(true)
-    setTimeout(() => {
-      setScores({})
-      setVoterName('')
-      setSubmitted(false)
-      // Reset scores
-      const initialScores = {}
-      members.forEach(member => {
-        initialScores[member.id] = 0
+    try {
+      await saveVote({
+        voterName: voterName.trim(),
+        scores: scores
       })
-      setScores(initialScores)
-    }, 2000)
+
+      setSubmitted(true)
+      setTimeout(() => {
+        setScores({})
+        setVoterName('')
+        setSubmitted(false)
+        // Reset scores
+        const initialScores = {}
+        members.forEach(member => {
+          initialScores[member.id] = 0
+        })
+        setScores(initialScores)
+      }, 2000)
+    } catch (error) {
+      alert('Failed to submit vote. Please try again. / ส่งการโหวตไม่สำเร็จ กรุณาลองอีกครั้ง')
+      console.error('Vote submission error:', error)
+    }
   }
 
   const remainingPoints = 100 - totalScore

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { calculateResults, getAllVotes } from '../utils/storage'
+import { calculateResults } from '../utils/storage'
 import { t } from '../utils/i18n'
 
 function Results() {
@@ -19,12 +19,27 @@ function Results() {
     }, 1500) // 1.5 seconds of suspense
   }, [])
 
-  const loadResults = () => {
-    const calculatedResults = calculateResults()
-    setResults(calculatedResults)
-    const votes = getAllVotes()
-    setTotalVotes(votes.length)
-    setIsLoaded(false)
+  const loadResults = async () => {
+    try {
+      const data = await calculateResults()
+      // calculateResults now returns { results, totalVotes } from API
+      if (Array.isArray(data)) {
+        // Fallback for localStorage
+        setResults(data.slice(0, 3)) // Show only top 3
+        const votes = await import('../utils/storage').then(m => m.getAllVotes())
+        setTotalVotes(votes.length)
+      } else {
+        // API response
+        setResults(data.results || []) // Already top 3 from API
+        setTotalVotes(data.totalVotes || 0)
+      }
+      setIsLoaded(false)
+    } catch (error) {
+      console.error('Failed to load results:', error)
+      setResults([])
+      setTotalVotes(0)
+      setIsLoaded(false)
+    }
   }
 
   const getRankIcon = (rank) => {
@@ -87,7 +102,7 @@ function Results() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <div className="mb-4 md:mb-0">
             <h2 className="text-4xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
-              🏆 {t('results.title')}
+              🏆 {t('results.title')} - Top 3
             </h2>
             <p className="text-gray-600">{t('results.subtitle')}</p>
           </div>
@@ -110,7 +125,7 @@ function Results() {
         </div>
       </div>
 
-      {/* Results List with Animation */}
+      {/* Results List with Animation - Only Top 3 */}
       <div className="space-y-4">
         {results.map((member, index) => {
           const rank = index + 1
