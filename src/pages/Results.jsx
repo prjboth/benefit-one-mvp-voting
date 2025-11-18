@@ -11,11 +11,11 @@ function Results() {
   useEffect(() => {
     // Show exciting loading animation first
     setShowLoading(true)
+    setIsLoaded(false) // Reset animation state
     setTimeout(() => {
       loadResults()
       setShowLoading(false)
-      // Trigger animation after loading
-      setTimeout(() => setIsLoaded(true), 300)
+      // isLoaded will be set to true inside loadResults() after data is loaded
     }, 1500) // 1.5 seconds of suspense
   }, [])
 
@@ -46,13 +46,15 @@ function Results() {
         setResults([])
         setTotalVotes(0)
       }
-      setIsLoaded(false)
+      // Set isLoaded to true after data is loaded to trigger animations
+      setTimeout(() => setIsLoaded(true), 100)
     } catch (error) {
       console.error('Failed to load results:', error)
       console.error('Error details:', error.message, error.stack)
       setResults([])
       setTotalVotes(0)
-      setIsLoaded(false)
+      // Still set isLoaded to true even on error to show empty state
+      setTimeout(() => setIsLoaded(true), 100)
     }
   }
 
