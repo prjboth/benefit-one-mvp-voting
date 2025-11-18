@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Voting from './pages/Voting'
 import Results from './pages/Results'
 import Config from './pages/Config'
+import LuckyDraw from './pages/LuckyDraw'
 import PasswordProtection from './components/PasswordProtection'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import { t } from './utils/i18n'
@@ -41,6 +42,16 @@ function Navigation() {
                 {t('nav.results')}
               </Link>
               <Link
+                to="/lucky-draw"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  isActive('/lucky-draw') 
+                    ? 'border-red-500 text-gray-900' 
+                    : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
+                }`}
+              >
+                {t('nav.luckyDraw')}
+              </Link>
+              <Link
                 to="/config"
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                   isActive('/config') 
@@ -70,6 +81,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Voting />} />
             <Route path="/results" element={<PasswordProtection><Results /></PasswordProtection>} />
+            <Route path="/lucky-draw" element={<LuckyDraw />} />
             <Route path="/config" element={<PasswordProtection><Config /></PasswordProtection>} />
           </Routes>
         </div>

@@ -6,6 +6,7 @@ const translations = {
     nav: {
       vote: 'โหวต',
       results: 'ผลการโหวต',
+      luckyDraw: '🎲 จับฉลาก',
       import: 'Config'
     },
     // Voting Page
@@ -77,6 +78,22 @@ const translations = {
       passwordPlaceholder: 'กรอกรหัสผ่าน',
       submit: 'เข้าสู่ระบบ',
       error: 'รหัสผ่านไม่ถูกต้อง'
+    },
+    // Lucky Draw Page
+    luckyDraw: {
+      title: 'จับฉลาก',
+      subtitle: 'จับฉลากเลือกผู้โชคดีจากรายชื่อสมาชิก',
+      totalMembers: 'จำนวนสมาชิกทั้งหมด',
+      startDraw: 'เริ่มจับฉลาก',
+      drawing: 'กำลังจับฉลาก...',
+      currentSelection: 'ผู้ที่ถูกเลือก',
+      winner: 'ผู้ชนะ',
+      congratulations: 'ยินดีด้วย!',
+      drawAgain: 'จับอีกครั้ง',
+      reset: 'รีเซ็ต',
+      allMembers: 'รายชื่อสมาชิกทั้งหมด',
+      noMembers: 'ยังไม่มีรายชื่อสมาชิก',
+      goToConfig: 'ไปที่หน้า Config เพื่อเพิ่มสมาชิก'
     }
   },
   en: {
@@ -84,6 +101,7 @@ const translations = {
     nav: {
       vote: 'Vote',
       results: 'Results',
+      luckyDraw: '🎲 Lucky Draw',
       import: 'Config'
     },
     // Voting Page
@@ -155,6 +173,22 @@ const translations = {
       passwordPlaceholder: 'Enter password',
       submit: 'Login',
       error: 'Incorrect password'
+    },
+    // Lucky Draw Page
+    luckyDraw: {
+      title: 'Lucky Draw',
+      subtitle: 'Randomly select a lucky winner from member list',
+      totalMembers: 'Total Members',
+      startDraw: 'Start Draw',
+      drawing: 'Drawing...',
+      currentSelection: 'Current Selection',
+      winner: 'Winner',
+      congratulations: 'Congratulations!',
+      drawAgain: 'Draw Again',
+      reset: 'Reset',
+      allMembers: 'All Members',
+      noMembers: 'No members available',
+      goToConfig: 'Go to Config to add members'
     }
   }
 }
