@@ -131,8 +131,9 @@ function LuckyDraw() {
     <div className="bg-white rounded-lg shadow-xl p-8">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-5xl font-bold mb-3 bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent animate-pulse">
-          🎲 {t('luckyDraw.title')}
+        <h2 className="text-5xl font-bold mb-3 bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent animate-pulse flex items-center justify-center gap-3">
+          <span className="text-6xl dice-emoji">🎲</span>
+          {t('luckyDraw.title')}
         </h2>
         <p className="text-gray-600 text-lg">{t('luckyDraw.subtitle')}</p>
         <p className="text-sm text-gray-500 mt-2">
@@ -173,7 +174,9 @@ function LuckyDraw() {
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         {!showResult && !isDrawing && (
           <div className="text-center">
-            <div className="text-9xl mb-8 animate-bounce" style={{ animationDuration: '1s' }}>🎲</div>
+            <div className="mb-8 animate-bounce flex justify-center" style={{ animationDuration: '1s' }}>
+              <div className="text-9xl dice-emoji">🎲</div>
+            </div>
             <button
               onClick={startDraw}
               className="px-16 py-5 bg-gradient-to-r from-red-600 via-pink-600 to-red-700 text-white rounded-2xl hover:from-red-700 hover:via-pink-700 hover:to-red-800 transition-all shadow-2xl hover:shadow-3xl transform hover:scale-110 duration-300 font-bold text-2xl animate-pulse"
