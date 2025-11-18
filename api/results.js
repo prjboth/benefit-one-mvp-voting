@@ -16,10 +16,14 @@ export default async function handler(req, res) {
     const votesFile = '/tmp/votes.json'
 
     console.log('Reading members and votes...')
+    console.log(`Members file: ${membersFile}`)
+    console.log(`Votes file: ${votesFile}`)
+    
     const members = readJSON(membersFile, [])
     const votes = readJSON(votesFile, [])
     
     console.log(`Found ${members.length} members and ${votes.length} votes`)
+    console.log('Votes data:', JSON.stringify(votes, null, 2))
     
     const scores = {}
     members.forEach(member => {

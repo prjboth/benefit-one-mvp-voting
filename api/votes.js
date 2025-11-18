@@ -18,6 +18,7 @@ export default async function handler(req, res) {
 
   if (method === 'GET') {
     const votes = readJSON(votesFile, [])
+    console.log(`GET /api/votes: Returning ${votes.length} votes`)
     return res.json(votes)
   }
 
