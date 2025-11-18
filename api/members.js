@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(200).end()
   }
 
-  const { method } = req
+  const { method, query } = req
 
   if (method === 'GET') {
     try {
@@ -52,6 +52,46 @@ export default async function handler(req, res) {
     }
   }
 
-  res.setHeader('Allow', ['GET', 'POST'])
+  if (method === 'DELETE') {
+    try {
+      // DELETE with id in query string: /api/members?id=xxx
+      const { id } = query
+      console.log('DELETE /api/members - Received id:', id)
+      
+      if (!id) {
+        return res.status(400).json({ error: 'Missing member id' })
+      }
+      
+      const members = await getMembers()
+      console.log(`Current members count: ${members.length}`)
+      
+      const beforeCount = members.length
+      const filtered = members.filter(m => m.id !== id)
+      const afterCount = filtered.length
+      
+      if (beforeCount === afterCount) {
+        console.warn(`Member with id ${id} not found`)
+        return res.status(404).json({ error: 'Member not found' })
+      }
+      
+      console.log(`Filtered members: ${beforeCount} -> ${afterCount}`)
+      
+      try {
+        await setMembers(filtered)
+        console.log(`Member deleted successfully. New count: ${afterCount}`)
+        return res.json({ success: true })
+      } catch (writeError) {
+        console.error('Failed to write members to KV:', writeError)
+        console.error('Write error details:', writeError.message, writeError.stack)
+        return res.status(500).json({ error: 'Failed to save changes: ' + writeError.message })
+      }
+    } catch (error) {
+      console.error('Error in DELETE /api/members:', error)
+      console.error('Error stack:', error.stack)
+      return res.status(500).json({ error: error.message || 'Internal server error' })
+    }
+  }
+
+  res.setHeader('Allow', ['GET', 'POST', 'DELETE'])
   return res.status(405).end()
 }
