@@ -231,6 +231,56 @@ function Config() {
     })
   }
 
+  const handleResetPassword = async (e) => {
+    e.preventDefault()
+    setPasswordError('')
+    setPasswordSuccess('')
+
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError(t('config.passwordRequired') || 'All fields are required / กรุณากรอกข้อมูลครบถ้วน')
+      return
+    }
+
+    if (newPassword.length < 4) {
+      setPasswordError(t('config.passwordMinLength') || 'Password must be at least 4 characters / รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError(t('config.passwordMismatch') || 'New passwords do not match / รหัสผ่านใหม่ไม่ตรงกัน')
+      return
+    }
+
+    setPasswordLoading(true)
+    try {
+      console.log('Resetting password...', { currentPassword: '***', newPassword: '***' })
+      const result = await api.resetAdminPassword(currentPassword, newPassword)
+      console.log('Reset password result:', result)
+      
+      setPasswordSuccess(t('config.passwordResetSuccess') || 'Password reset successfully! Page will reload... / รีเซ็ตรหัสผ่านสำเร็จ! ระบบจะรีโหลดหน้าเว็บ...')
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      
+      // Clear session to force re-authentication
+      setTimeout(() => {
+        sessionStorage.removeItem('adminAuthenticated')
+        window.location.reload()
+      }, 2000)
+    } catch (error) {
+      console.error('Reset password error:', error)
+      const errorMessage = error.message || 'Failed to reset password / รีเซ็ตรหัสผ่านไม่สำเร็จ'
+      if (errorMessage.includes('401') || errorMessage.includes('incorrect')) {
+        setPasswordError(t('config.currentPasswordIncorrect') || 'Current password is incorrect / รหัสผ่านปัจจุบันไม่ถูกต้อง')
+      } else {
+        setPasswordError(errorMessage)
+      }
+    } finally {
+      setPasswordLoading(false)
+    }
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-xl p-8">
       <div className="flex justify-between items-center mb-6">

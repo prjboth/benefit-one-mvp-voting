@@ -40,9 +40,17 @@ async function apiCall(endpoint, options = {}) {
     console.log('API Response status:', response.status, response.statusText)
     
     if (!response.ok) {
-      const errorText = await response.text()
+      let errorText = ''
+      try {
+        const errorData = await response.json()
+        errorText = errorData.error || errorData.message || JSON.stringify(errorData)
+      } catch {
+        errorText = await response.text()
+      }
       console.error('API Error:', response.status, errorText)
-      throw new Error(`API error: ${response.status} ${response.statusText}`)
+      const error = new Error(errorText || `API error: ${response.status}`)
+      error.status = response.status
+      throw error
     }
     
     const contentType = response.headers.get('content-type')
