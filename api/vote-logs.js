@@ -1,4 +1,4 @@
-import { readJSON } from '../server/utils.js'
+import { getLogs } from '../server/kv-utils.js'
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -11,11 +11,15 @@ export default async function handler(req, res) {
     return res.status(200).end()
   }
 
-  const logsFile = '/tmp/logs.json'
-  console.log('Reading vote logs from:', logsFile)
-  const logs = readJSON(logsFile, [])
-  console.log(`Found ${logs.length} logs`)
-  const recentLogs = logs.slice(-100).reverse()
-  console.log(`Returning ${recentLogs.length} recent logs`)
-  return res.json(recentLogs)
+  try {
+    console.log('Reading vote logs from KV...')
+    const logs = await getLogs()
+    console.log(`Found ${logs.length} logs`)
+    const recentLogs = logs.slice(-100).reverse()
+    console.log(`Returning ${recentLogs.length} recent logs`)
+    return res.json(recentLogs)
+  } catch (error) {
+    console.error('Error in GET /api/vote-logs:', error)
+    return res.status(500).json({ error: error.message })
+  }
 }

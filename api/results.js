@@ -1,4 +1,4 @@
-import { readJSON } from '../server/utils.js'
+import { getMembers, getVotes } from '../server/kv-utils.js'
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -12,18 +12,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const membersFile = '/tmp/members.json'
-    const votesFile = '/tmp/votes.json'
-
-    console.log('Reading members and votes...')
-    console.log(`Members file: ${membersFile}`)
-    console.log(`Votes file: ${votesFile}`)
+    console.log('Reading members and votes from KV...')
     
-    const members = readJSON(membersFile, [])
-    const votes = readJSON(votesFile, [])
+    const members = await getMembers()
+    const votes = await getVotes()
     
     console.log(`Found ${members.length} members and ${votes.length} votes`)
-    console.log('Votes data:', JSON.stringify(votes, null, 2))
     
     const scores = {}
     members.forEach(member => {

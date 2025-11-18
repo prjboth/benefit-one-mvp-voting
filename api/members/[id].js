@@ -1,4 +1,4 @@
-import { readJSON, writeJSON } from '../../../server/utils.js'
+import { getMembers, setMembers } from '../../../server/kv-utils.js'
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -13,25 +13,34 @@ export default async function handler(req, res) {
 
   const { method, query } = req
   const { id } = query
-  const membersFile = '/tmp/members.json'
 
   if (method === 'PUT') {
-    const { name, photo } = req.body
-    const members = readJSON(membersFile, [])
-    const index = members.findIndex(m => m.id === id)
-    if (index !== -1) {
-      members[index] = { ...members[index], name, photo: photo || null }
-      writeJSON(membersFile, members)
-      return res.json({ success: true })
+    try {
+      const { name, photo } = req.body
+      const members = await getMembers()
+      const index = members.findIndex(m => m.id === id)
+      if (index !== -1) {
+        members[index] = { ...members[index], name, photo: photo || null }
+        await setMembers(members)
+        return res.json({ success: true })
+      }
+      return res.status(404).json({ error: 'Member not found' })
+    } catch (error) {
+      console.error('Error in PUT /api/members/:id:', error)
+      return res.status(500).json({ error: error.message })
     }
-    return res.status(404).json({ error: 'Member not found' })
   }
 
   if (method === 'DELETE') {
-    const members = readJSON(membersFile, [])
-    const filtered = members.filter(m => m.id !== id)
-    writeJSON(membersFile, filtered)
-    return res.json({ success: true })
+    try {
+      const members = await getMembers()
+      const filtered = members.filter(m => m.id !== id)
+      await setMembers(filtered)
+      return res.json({ success: true })
+    } catch (error) {
+      console.error('Error in DELETE /api/members/:id:', error)
+      return res.status(500).json({ error: error.message })
+    }
   }
 
   res.setHeader('Allow', ['PUT', 'DELETE'])

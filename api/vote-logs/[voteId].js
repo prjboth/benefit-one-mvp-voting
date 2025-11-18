@@ -1,4 +1,4 @@
-import { readJSON } from '../../../server/utils.js'
+import { getLogs } from '../../../server/kv-utils.js'
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -11,11 +11,15 @@ export default async function handler(req, res) {
     return res.status(200).end()
   }
 
-  const { query } = req
-  const { voteId } = query
-  const logsFile = '/tmp/logs.json'
-  
-  const logs = readJSON(logsFile, [])
-  const voteLogs = logs.filter(log => log.voteId === voteId)
-  return res.json(voteLogs)
+  try {
+    const { query } = req
+    const { voteId } = query
+    
+    const logs = await getLogs()
+    const voteLogs = logs.filter(log => log.voteId === voteId)
+    return res.json(voteLogs)
+  } catch (error) {
+    console.error('Error in GET /api/vote-logs/:voteId:', error)
+    return res.status(500).json({ error: error.message })
+  }
 }

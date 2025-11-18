@@ -1,4 +1,4 @@
-import { readJSON, writeJSON } from '../server/utils.js'
+import { getVotes, setVotes, getLogs, setLogs, getMembers } from '../server/kv-utils.js'
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -12,14 +12,16 @@ export default async function handler(req, res) {
   }
 
   const { method } = req
-  const votesFile = '/tmp/votes.json'
-  const logsFile = '/tmp/logs.json'
-  const membersFile = '/tmp/members.json'
 
   if (method === 'GET') {
-    const votes = readJSON(votesFile, [])
-    console.log(`GET /api/votes: Returning ${votes.length} votes`)
-    return res.json(votes)
+    try {
+      const votes = await getVotes()
+      console.log(`GET /api/votes: Returning ${votes.length} votes`)
+      return res.json(votes)
+    } catch (error) {
+      console.error('Error in GET /api/votes:', error)
+      return res.status(500).json({ error: error.message })
+    }
   }
 
   if (method === 'POST') {
@@ -35,20 +37,20 @@ export default async function handler(req, res) {
       const timestamp = new Date().toISOString()
       
       const vote = { id: voteId, voterName, timestamp, scores }
-      const votes = readJSON(votesFile, [])
+      const votes = await getVotes()
       votes.push(vote)
-      const writeSuccess = writeJSON(votesFile, votes)
+      const writeSuccess = await setVotes(votes)
       
       if (!writeSuccess) {
-        console.error('Failed to write votes file')
+        console.error('Failed to write votes to KV')
         return res.status(500).json({ error: 'Failed to save vote' })
       }
       
       console.log(`Vote saved successfully. Total votes: ${votes.length}`)
       
       // Create logs
-      const logs = readJSON(logsFile, [])
-      const members = readJSON(membersFile, [])
+      const logs = await getLogs()
+      const members = await getMembers()
       
       Object.keys(scores).forEach(memberId => {
         const score = scores[memberId]
@@ -59,7 +61,7 @@ export default async function handler(req, res) {
         }
       })
       
-      writeJSON(logsFile, logs)
+      await setLogs(logs)
       console.log(`Logs updated. Total logs: ${logs.length}`)
       
       return res.json({ success: true, id: voteId })
@@ -70,9 +72,14 @@ export default async function handler(req, res) {
   }
 
   if (method === 'DELETE') {
-    writeJSON(votesFile, [])
-    writeJSON(logsFile, [])
-    return res.json({ success: true })
+    try {
+      await setVotes([])
+      await setLogs([])
+      return res.json({ success: true })
+    } catch (error) {
+      console.error('Error in DELETE /api/votes:', error)
+      return res.status(500).json({ error: error.message })
+    }
   }
 
   res.setHeader('Allow', ['GET', 'POST', 'DELETE'])

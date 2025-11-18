@@ -1,4 +1,4 @@
-import { readJSON, writeJSON } from '../server/utils.js'
+import { getMembers, setMembers } from '../server/kv-utils.js'
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -12,19 +12,28 @@ export default async function handler(req, res) {
   }
 
   const { method } = req
-  const membersFile = '/tmp/members.json'
 
   if (method === 'GET') {
-    const members = readJSON(membersFile, [])
-    return res.json(members)
+    try {
+      const members = await getMembers()
+      return res.json(members)
+    } catch (error) {
+      console.error('Error in GET /api/members:', error)
+      return res.status(500).json({ error: error.message })
+    }
   }
 
   if (method === 'POST') {
-    const { id, name, photo } = req.body
-    const members = readJSON(membersFile, [])
-    members.push({ id, name, photo: photo || null })
-    writeJSON(membersFile, members)
-    return res.json({ success: true, id })
+    try {
+      const { id, name, photo } = req.body
+      const members = await getMembers()
+      members.push({ id, name, photo: photo || null })
+      await setMembers(members)
+      return res.json({ success: true, id })
+    } catch (error) {
+      console.error('Error in POST /api/members:', error)
+      return res.status(500).json({ error: error.message })
+    }
   }
 
   res.setHeader('Allow', ['GET', 'POST'])
