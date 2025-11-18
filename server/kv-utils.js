@@ -13,6 +13,14 @@ const KEYS = {
 // Read data from KV
 export const readKV = async (key, defaultValue = []) => {
   try {
+    // Check if KV is configured
+    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+      console.error('KV Environment Variables not set!')
+      console.error('KV_REST_API_URL:', process.env.KV_REST_API_URL ? 'Set' : 'Missing')
+      console.error('KV_REST_API_TOKEN:', process.env.KV_REST_API_TOKEN ? 'Set' : 'Missing')
+      throw new Error('Vercel KV is not configured. Please set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.')
+    }
+    
     const data = await kv.get(key)
     if (data === null) {
       console.log(`KV key not found: ${key}, using default`)
@@ -22,19 +30,29 @@ export const readKV = async (key, defaultValue = []) => {
     return data
   } catch (error) {
     console.error(`Error reading KV ${key}:`, error)
-    return defaultValue
+    console.error('Error details:', error.message, error.stack)
+    throw error
   }
 }
 
 // Write data to KV
 export const writeKV = async (key, data) => {
   try {
+    // Check if KV is configured
+    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+      console.error('KV Environment Variables not set!')
+      console.error('KV_REST_API_URL:', process.env.KV_REST_API_URL ? 'Set' : 'Missing')
+      console.error('KV_REST_API_TOKEN:', process.env.KV_REST_API_TOKEN ? 'Set' : 'Missing')
+      throw new Error('Vercel KV is not configured. Please set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.')
+    }
+    
     await kv.set(key, data)
     console.log(`KV written: ${key}, data length: ${Array.isArray(data) ? data.length : 'N/A'}`)
     return true
   } catch (error) {
     console.error(`Error writing KV ${key}:`, error)
-    return false
+    console.error('Error details:', error.message, error.stack)
+    throw error
   }
 }
 

@@ -26,13 +26,29 @@ export default async function handler(req, res) {
   if (method === 'POST') {
     try {
       const { id, name, photo } = req.body
+      console.log('POST /api/members - Received:', { id, name, photo: photo ? 'has photo' : 'no photo' })
+      
+      if (!id || !name) {
+        return res.status(400).json({ error: 'Missing id or name' })
+      }
+      
       const members = await getMembers()
+      console.log(`Current members count: ${members.length}`)
+      
       members.push({ id, name, photo: photo || null })
-      await setMembers(members)
+      const writeSuccess = await setMembers(members)
+      
+      if (!writeSuccess) {
+        console.error('Failed to write members to KV')
+        return res.status(500).json({ error: 'Failed to save member' })
+      }
+      
+      console.log(`Member added successfully. New count: ${members.length}`)
       return res.json({ success: true, id })
     } catch (error) {
       console.error('Error in POST /api/members:', error)
-      return res.status(500).json({ error: error.message })
+      console.error('Error stack:', error.stack)
+      return res.status(500).json({ error: error.message || 'Internal server error' })
     }
   }
 
