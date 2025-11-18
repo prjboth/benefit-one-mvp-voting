@@ -3,6 +3,7 @@ import Voting from './pages/Voting'
 import Results from './pages/Results'
 import Config from './pages/Config'
 import LuckyDraw from './pages/LuckyDraw'
+import LuckyDrawHistory from './pages/LuckyDrawHistory'
 import PasswordProtection from './components/PasswordProtection'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import { t } from './utils/i18n'
@@ -82,6 +83,7 @@ function App() {
             <Route path="/" element={<Voting />} />
             <Route path="/results" element={<PasswordProtection><Results /></PasswordProtection>} />
             <Route path="/lucky-draw" element={<LuckyDraw />} />
+            <Route path="/lucky-draw-history" element={<LuckyDrawHistory />} />
             <Route path="/config" element={<PasswordProtection><Config /></PasswordProtection>} />
           </Routes>
         </div>

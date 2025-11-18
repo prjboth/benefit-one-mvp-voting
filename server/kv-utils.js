@@ -7,7 +7,8 @@ import { kv } from '@vercel/kv'
 const KEYS = {
   MEMBERS: 'mvp:members',
   VOTES: 'mvp:votes',
-  LOGS: 'mvp:logs'
+  LOGS: 'mvp:logs',
+  LUCKY_DRAW_LOGS: 'mvp:luckyDrawLogs'
 }
 
 // Read data from KV
@@ -67,6 +68,10 @@ export const setVotes = (votes) => writeKV(KEYS.VOTES, votes)
 // Logs operations
 export const getLogs = () => readKV(KEYS.LOGS, [])
 export const setLogs = (logs) => writeKV(KEYS.LOGS, logs)
+
+// Lucky Draw Logs operations
+export const getLuckyDrawLogs = () => readKV(KEYS.LUCKY_DRAW_LOGS, [])
+export const setLuckyDrawLogs = (logs) => writeKV(KEYS.LUCKY_DRAW_LOGS, logs)
 
 export { KEYS }
 

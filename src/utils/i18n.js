@@ -93,7 +93,21 @@ const translations = {
       reset: 'รีเซ็ต',
       allMembers: 'รายชื่อสมาชิกทั้งหมด',
       noMembers: 'ยังไม่มีรายชื่อสมาชิก',
-      goToConfig: 'ไปที่หน้า Config เพื่อเพิ่มสมาชิก'
+      goToConfig: 'ไปที่หน้า Config เพื่อเพิ่มสมาชิก',
+      selectCount: 'เลือกจำนวนผู้ชนะ',
+      winners: 'คน',
+      tooManyWinners: 'จำนวนผู้ชนะต้องไม่เกินจำนวนสมาชิกทั้งหมด',
+      viewHistory: 'ดูประวัติ'
+    },
+    // Lucky Draw History Page
+    luckyDrawHistory: {
+      title: 'ประวัติการจับฉลาก',
+      subtitle: 'รายการจับฉลากทั้งหมด',
+      noHistory: 'ยังไม่มีประวัติการจับฉลาก',
+      drawDate: 'วันที่จับ',
+      winners: 'ผู้ชนะ',
+      winnerCount: 'จำนวนผู้ชนะ',
+      backToDraw: 'กลับไปจับฉลาก'
     }
   },
   en: {
@@ -188,7 +202,21 @@ const translations = {
       reset: 'Reset',
       allMembers: 'All Members',
       noMembers: 'No members available',
-      goToConfig: 'Go to Config to add members'
+      goToConfig: 'Go to Config to add members',
+      selectCount: 'Select Number of Winners',
+      winners: 'winners',
+      tooManyWinners: 'Number of winners cannot exceed total members',
+      viewHistory: 'View History'
+    },
+    // Lucky Draw History Page
+    luckyDrawHistory: {
+      title: 'Lucky Draw History',
+      subtitle: 'All lucky draw records',
+      noHistory: 'No lucky draw history yet',
+      drawDate: 'Draw Date',
+      winners: 'Winners',
+      winnerCount: 'Winner Count',
+      backToDraw: 'Back to Draw'
     }
   }
 }

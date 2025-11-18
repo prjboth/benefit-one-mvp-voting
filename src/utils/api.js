@@ -117,5 +117,13 @@ export const api = {
   getVoteCount: async () => {
     const votes = await apiCall('/votes')
     return votes.length
-  }
+  },
+  
+  // Lucky Draw Logs
+  getLuckyDrawLogs: () => apiCall('/lucky-draw-logs'),
+  
+  saveLuckyDrawLog: (log) => apiCall('/lucky-draw-logs', {
+    method: 'POST',
+    body: JSON.stringify(log)
+  })
 }
