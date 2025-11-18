@@ -93,8 +93,8 @@ function Voting() {
     return (
       <div className="bg-white rounded-lg shadow-xl p-8 text-center">
         <p className="text-gray-600 text-lg mb-4">{t('voting.noMembers')}</p>
-        <a href="/import" className="text-red-600 hover:text-red-800 font-semibold">
-          {t('voting.goToImport')}
+        <a href="/config" className="text-red-600 hover:text-red-800 font-semibold">
+          ไปที่หน้า Config →
         </a>
       </div>
     )

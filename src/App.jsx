@@ -1,8 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
 import Voting from './pages/Voting'
 import Results from './pages/Results'
-import Import from './pages/Import'
-import VoteLogs from './pages/VoteLogs'
+import Config from './pages/Config'
 import PasswordProtection from './components/PasswordProtection'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import { t } from './utils/i18n'
@@ -42,24 +41,14 @@ function Navigation() {
                 {t('nav.results')}
               </Link>
               <Link
-                to="/import"
+                to="/config"
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/import') 
+                  isActive('/config') 
                     ? 'border-red-500 text-gray-900' 
                     : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
                 }`}
               >
-                {t('nav.import')}
-              </Link>
-              <Link
-                to="/logs"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/logs') 
-                    ? 'border-red-500 text-gray-900' 
-                    : 'border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700'
-                }`}
-              >
-                📋 Logs
+                ⚙️ Config
               </Link>
             </div>
           </div>
@@ -81,8 +70,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Voting />} />
             <Route path="/results" element={<PasswordProtection><Results /></PasswordProtection>} />
-            <Route path="/import" element={<PasswordProtection><Import /></PasswordProtection>} />
-            <Route path="/logs" element={<VoteLogs />} />
+            <Route path="/config" element={<PasswordProtection><Config /></PasswordProtection>} />
           </Routes>
         </div>
       </div>

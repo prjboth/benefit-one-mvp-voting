@@ -26,3 +26,6 @@ dist-ssr
 *.sln
 *.sw?
 
+# UAT Testing files (exclude from deployment)
+UAT/
+

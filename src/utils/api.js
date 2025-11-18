@@ -47,11 +47,7 @@ async function apiCall(endpoint, options = {}) {
     return data
   } catch (error) {
     console.error('API call failed:', error)
-    // Don't throw in development, return empty array instead
-    if (import.meta.env.DEV) {
-      console.warn('API call failed, returning empty array')
-      return []
-    }
+    // In production, throw error to be handled by caller
     throw error
   }
 }

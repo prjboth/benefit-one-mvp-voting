@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { calculateResults } from '../utils/storage'
+import { calculateResults, getAllVotes } from '../utils/storage'
 import { t } from '../utils/i18n'
 
 function Results() {
@@ -22,16 +22,21 @@ function Results() {
   const loadResults = async () => {
     try {
       const data = await calculateResults()
+      console.log('Results data:', data)
+      
       // calculateResults now returns { results, totalVotes } from API
       if (Array.isArray(data)) {
         // Fallback for localStorage
         setResults(data.slice(0, 3)) // Show only top 3
-        const votes = await import('../utils/storage').then(m => m.getAllVotes())
-        setTotalVotes(votes.length)
-      } else {
+        const votes = await getAllVotes()
+        setTotalVotes(Array.isArray(votes) ? votes.length : 0)
+      } else if (data && typeof data === 'object') {
         // API response
-        setResults(data.results || []) // Already top 3 from API
+        setResults(Array.isArray(data.results) ? data.results : []) // Already top 3 from API
         setTotalVotes(data.totalVotes || 0)
+      } else {
+        setResults([])
+        setTotalVotes(0)
       }
       setIsLoaded(false)
     } catch (error) {

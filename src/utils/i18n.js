@@ -6,7 +6,7 @@ const translations = {
     nav: {
       vote: 'โหวต',
       results: 'ผลการโหวต',
-      import: 'Import รายชื่อ'
+      import: 'Config'
     },
     // Voting Page
     voting: {
@@ -84,7 +84,7 @@ const translations = {
     nav: {
       vote: 'Vote',
       results: 'Results',
-      import: 'Import Members'
+      import: 'Config'
     },
     // Voting Page
     voting: {

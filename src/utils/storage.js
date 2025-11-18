@@ -81,8 +81,8 @@ export const getVotes = async () => {
 }
 
 export const saveVote = async (vote) => {
-  if (useLocalStorage) {
-    const votes = getVotes()
+  if (useLocalStorage && isBrowser) {
+    const votes = await getVotes()
     votes.push({
       ...vote,
       id: Date.now().toString(),
@@ -158,9 +158,9 @@ export const resetAllVotes = async () => {
 }
 
 export const getVoteCount = async () => {
-  if (useLocalStorage) {
-    const votes = getVotes()
-    return votes.length
+  if (useLocalStorage && isBrowser) {
+    const votes = await getVotes()
+    return Array.isArray(votes) ? votes.length : 0
   }
   try {
     return await api.getVoteCount()
