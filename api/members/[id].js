@@ -12,7 +12,11 @@ export default async function handler(req, res) {
   }
 
   const { method, query } = req
-  const { id } = query
+  const id = query.id || query.id
+  
+  console.log('Request method:', method)
+  console.log('Request query:', query)
+  console.log('Extracted id:', id)
 
   if (method === 'PUT') {
     try {
