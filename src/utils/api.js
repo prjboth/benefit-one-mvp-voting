@@ -81,9 +81,12 @@ export const api = {
   }),
   
   // Delete member
-  deleteMember: (id) => apiCall(`/members/${id}`, {
-    method: 'DELETE'
-  }),
+  deleteMember: (id) => {
+    console.log('Deleting member with id:', id)
+    return apiCall(`/members/${id}`, {
+      method: 'DELETE'
+    })
+  },
   
   // Get all votes
   getVotes: () => apiCall('/votes'),

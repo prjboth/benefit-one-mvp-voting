@@ -33,13 +33,38 @@ export default async function handler(req, res) {
 
   if (method === 'DELETE') {
     try {
+      console.log('DELETE /api/members/:id - Received id:', id)
+      
+      if (!id) {
+        return res.status(400).json({ error: 'Missing member id' })
+      }
+      
       const members = await getMembers()
+      console.log(`Current members count: ${members.length}`)
+      
+      const beforeCount = members.length
       const filtered = members.filter(m => m.id !== id)
-      await setMembers(filtered)
+      const afterCount = filtered.length
+      
+      if (beforeCount === afterCount) {
+        console.warn(`Member with id ${id} not found`)
+        return res.status(404).json({ error: 'Member not found' })
+      }
+      
+      console.log(`Filtered members: ${beforeCount} -> ${afterCount}`)
+      const writeSuccess = await setMembers(filtered)
+      
+      if (!writeSuccess) {
+        console.error('Failed to write members to KV')
+        return res.status(500).json({ error: 'Failed to save changes' })
+      }
+      
+      console.log(`Member deleted successfully. New count: ${afterCount}`)
       return res.json({ success: true })
     } catch (error) {
       console.error('Error in DELETE /api/members/:id:', error)
-      return res.status(500).json({ error: error.message })
+      console.error('Error stack:', error.stack)
+      return res.status(500).json({ error: error.message || 'Internal server error' })
     }
   }
 
