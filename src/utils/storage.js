@@ -5,19 +5,27 @@ import { api } from './api'
 // Fallback to localStorage if API fails
 const useLocalStorage = false
 
+// Helper to check if we're in browser
+const isBrowser = typeof window !== 'undefined'
+
 // Members
 export const getMembers = async () => {
-  if (useLocalStorage) {
+  if (useLocalStorage && isBrowser) {
     const members = localStorage.getItem('mvp-members')
     return members ? JSON.parse(members) : []
   }
   try {
-    return await api.getMembers()
+    const members = await api.getMembers()
+    console.log('Loaded members:', members)
+    return Array.isArray(members) ? members : []
   } catch (error) {
     console.error('Failed to fetch members:', error)
     // Fallback to localStorage
-    const members = localStorage.getItem('mvp-members')
-    return members ? JSON.parse(members) : []
+    if (isBrowser) {
+      const members = localStorage.getItem('mvp-members')
+      return members ? JSON.parse(members) : []
+    }
+    return []
   }
 }
 

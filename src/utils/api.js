@@ -8,8 +8,11 @@ const getApiUrl = () => {
   }
   
   // If running on Vercel, use same origin
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return '/api'
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname
+    if (hostname.includes('vercel.app') || hostname.includes('vercel.com')) {
+      return '/api'
+    }
   }
   
   // Default to localhost for development
@@ -18,10 +21,15 @@ const getApiUrl = () => {
 
 const API_BASE_URL = getApiUrl()
 
+console.log('API Base URL:', API_BASE_URL)
+
 // Helper function for API calls
 async function apiCall(endpoint, options = {}) {
+  const url = `${API_BASE_URL}${endpoint}`
+  console.log('API Call:', url, options.method || 'GET')
+  
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers
@@ -30,12 +38,20 @@ async function apiCall(endpoint, options = {}) {
     })
     
     if (!response.ok) {
-      throw new Error(`API error: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('API Error:', response.status, errorText)
+      throw new Error(`API error: ${response.status} ${response.statusText}`)
     }
     
-    return await response.json()
+    const data = await response.json()
+    return data
   } catch (error) {
     console.error('API call failed:', error)
+    // Don't throw in development, return empty array instead
+    if (import.meta.env.DEV) {
+      console.warn('API call failed, returning empty array')
+      return []
+    }
     throw error
   }
 }
@@ -93,4 +109,3 @@ export const api = {
     return votes.length
   }
 }
-
