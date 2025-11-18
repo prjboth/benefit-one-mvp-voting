@@ -52,15 +52,16 @@ export default async function handler(req, res) {
       }
       
       console.log(`Filtered members: ${beforeCount} -> ${afterCount}`)
-      const writeSuccess = await setMembers(filtered)
       
-      if (!writeSuccess) {
-        console.error('Failed to write members to KV')
-        return res.status(500).json({ error: 'Failed to save changes' })
+      try {
+        await setMembers(filtered)
+        console.log(`Member deleted successfully. New count: ${afterCount}`)
+        return res.json({ success: true })
+      } catch (writeError) {
+        console.error('Failed to write members to KV:', writeError)
+        console.error('Write error details:', writeError.message, writeError.stack)
+        return res.status(500).json({ error: 'Failed to save changes: ' + writeError.message })
       }
-      
-      console.log(`Member deleted successfully. New count: ${afterCount}`)
-      return res.json({ success: true })
     } catch (error) {
       console.error('Error in DELETE /api/members/:id:', error)
       console.error('Error stack:', error.stack)
