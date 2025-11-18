@@ -12,15 +12,24 @@ function Voting() {
   const [showDescription, setShowDescription] = useState(true)
 
   useEffect(() => {
-    const loadedMembers = getMembers()
-    setMembers(loadedMembers)
+    const loadMembers = async () => {
+      try {
+        const loadedMembers = await getMembers()
+        setMembers(loadedMembers)
+        
+        // Initialize scores
+        const initialScores = {}
+        loadedMembers.forEach(member => {
+          initialScores[member.id] = 0
+        })
+        setScores(initialScores)
+      } catch (error) {
+        console.error('Failed to load members:', error)
+        setMembers([])
+      }
+    }
     
-    // Initialize scores
-    const initialScores = {}
-    loadedMembers.forEach(member => {
-      initialScores[member.id] = 0
-    })
-    setScores(initialScores)
+    loadMembers()
   }, [])
 
   useEffect(() => {
